@@ -10,9 +10,5 @@
   "routes": [
     { "src": "/(.*)", "dest": "src/index.ts" },
     { "src": "/tfjs_model/(.*)", "dest": "/public/tfjs_model/$1" }
-  ],
-  "static": {
-    "src": "public/**/*",
-    "dest": "/"
-  }
+  ]
 }
