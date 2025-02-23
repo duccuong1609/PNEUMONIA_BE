@@ -15,6 +15,7 @@ export class PredictController {
       console.error("❌ Predict error:", error);
       return res.status(500).json({
         message: "Predict failed",
+        error: (error as Error).message,
       });
     }
   }
