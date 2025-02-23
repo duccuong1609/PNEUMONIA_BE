@@ -2,7 +2,10 @@ import * as tf from "@tensorflow/tfjs";
 import sharp from "sharp";
 
 // 🔹 Model URL từ Vercel Blob Storage
-const MODEL_URL = `${process.env.BE_URL}/tfjs_model/model.json`;
+var model_url = `${process.env.BE_URL}/tfjs_model/model.json`;
+if (process.env.BE_URL != "http://localhost:8080") {
+  model_url = `${process.env.BE_URL}/public/tfjs_model/model.json`;
+}
 
 export class PredictService {
   private model: tf.GraphModel | null = null;
@@ -13,7 +16,7 @@ export class PredictService {
 
   private async loadModel() {
     try {
-      this.model = await tf.loadGraphModel(MODEL_URL);
+      this.model = await tf.loadGraphModel(model_url);
       console.log("✅ Model loaded successfully");
     } catch (error) {
       console.error("❌ Model load error:", error);
