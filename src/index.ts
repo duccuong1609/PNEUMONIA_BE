@@ -2,6 +2,7 @@ import express from 'express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import predict_routers from './routes/predict_routers';
+import path from 'path';
 
 const app = express();
 const port = process.env.PORT;
@@ -9,6 +10,9 @@ const port = process.env.PORT;
 // Phục vụ file tĩnh từ thư mục public
 if(process.env.BE_URL == 'http://localhost:8080') {
     app.use(express.static("public"));
+}
+else{
+    app.use('/public', express.static(path.join(__dirname, '../public')));
 }
 
 // CORS configuration - Add this BEFORE all routes and other middlewares
