@@ -5,8 +5,5 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "src/index.ts" }
-  ],
-  "rewrites": [
-    { "source": "/tfjs_model/:file", "destination": "/public/tfjs_model/:file" }
   ]
 }
