@@ -44,7 +44,10 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: `http://localhost:${port}`,
+                url: process.env.BE_URL,
+            },
+            {
+                url: `https://pneumonia-be.vercel.app`,
             },
         ],
     },

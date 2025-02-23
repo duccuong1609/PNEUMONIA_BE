@@ -4,6 +4,16 @@
     { "src": "src/index.ts", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "src/index.ts" }
+    {
+      "src": "/public/tfjs_model/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=86400, immutable"
+      },
+      "dest": "/public/tfjs_model/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
+    }
   ]
 }

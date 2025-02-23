@@ -11,10 +11,12 @@ export class PredictService {
   private model: tf.GraphModel | null = null;
 
   constructor() {
+    // Load model khi khởi tạo đối tượng PredictService
     this.loadModel();
   }
 
   private async loadModel() {
+    if (this.model) return; // Tránh tải lại mô hình nếu đã tải trước đó
     try {
       this.model = await tf.loadGraphModel(model_url);
       console.log("✅ Model loaded successfully");
