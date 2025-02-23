@@ -1,14 +1,12 @@
 {
   "version": 2,
   "builds": [
-    { "src": "src/index.ts", "use": "@vercel/node" },
-    {
-      "src": "public/tfjs_model/*",
-      "use": "@vercel/static"
-    }
+    { "src": "src/index.ts", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "src/index.ts" },
-    { "src": "/tfjs_model/(.*)", "dest": "/public/tfjs_model/$1" }
+    { "src": "/(.*)", "dest": "src/index.ts" }
+  ],
+  "rewrites": [
+    { "source": "/tfjs_model/:file", "destination": "/public/tfjs_model/:file" }
   ]
 }

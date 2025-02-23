@@ -7,7 +7,9 @@ const app = express();
 const port = process.env.PORT;
 
 // Phục vụ file tĩnh từ thư mục public
-app.use(express.static("public"));
+if(process.env.BE_URL == 'http://localhost:8080') {
+    app.use(express.static("public"));
+}
 
 // CORS configuration - Add this BEFORE all routes and other middlewares
 app.use((req, res, next) => {
