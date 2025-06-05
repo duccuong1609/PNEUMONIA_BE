@@ -6,69 +6,47 @@ if (process.env.BE_URL !== "http://localhost:8080") {
   model_url = `${process.env.BE_URL}/public/tfjs_model/model.json`;
 }
 
-const modelCache: Map<string, Promise<tf.GraphModel>> = new Map();
-
 export class PredictService {
   private model: tf.GraphModel | null = null;
+  private modelLoaded: Promise<void>;
 
   constructor() {
-    this.loadModel();
+    this.modelLoaded = this.loadModel();
   }
 
   private async loadModel() {
-    if (!modelCache.has(model_url)) {
+    if (this.model) return;
+    try {
       console.log("⏳ Loading model...");
-      modelCache.set(
-        model_url,
-        tf.loadGraphModel(model_url).then((model) => {
-          console.log("✅ Model loaded successfully");
-          return model;
-        })
-      );
+      this.model = await tf.loadGraphModel(model_url);
+      console.log("✅ Model loaded successfully");
+    } catch (error) {
+      console.error("❌ Model load error:", error);
     }
-    this.model = await modelCache.get(model_url)!;
   }
 
   async predict(imageBuffer: Buffer) {
-    try {
-      if (!this.model) {
-        throw new Error("Model not loaded yet!");
-      }
+    await this.modelLoaded; // 🔥 Đảm bảo model được load trước khi predict
 
-      const { data } = await sharp(imageBuffer)
-        .resize(150, 150)
-        .removeAlpha()
-        .raw()
-        .toBuffer({ resolveWithObject: true });
-
-      const imageTensor = tf
-        .tensor3d(data, [150, 150, 3], "int32")
-        .toFloat()
-        .div(tf.scalar(255))
-        .expandDims(0);
-
-      const prediction = this.model.predict(imageTensor) as tf.Tensor;
-      const dataPrediction = await prediction.data();
-
-      return { predict: dataPrediction };
-    } catch (error) {
-      console.error("❌ Prediction error:", error);
-      throw error;
+    if (!this.model) {
+      throw new Error("Model not loaded yet!");
     }
+
+    const { data } = await sharp(imageBuffer)
+      .resize(150, 150)
+      .removeAlpha() // 🔥 Loại bỏ kênh Alpha để chỉ còn RGB
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const imageTensor = tf
+      .tensor3d(data, [150, 150, 3], "int32")
+      .toFloat()
+      .div(tf.scalar(255))
+      .expandDims(0);
+
+    const prediction = this.model.predict(imageTensor) as tf.Tensor;
+    const dataPrediction = await prediction.data();
+
+    return { predict: dataPrediction };
   }
 }
-
-async function preloadModel() {
-  if (!modelCache.has(model_url)) {
-    console.log("⏳ Preloading model...");
-    modelCache.set(
-      model_url,
-      tf.loadGraphModel(model_url).then((model) => {
-        console.log("✅ Model preloaded successfully");
-        return model;
-      })
-    );
-  }
-}
-
-preloadModel();
